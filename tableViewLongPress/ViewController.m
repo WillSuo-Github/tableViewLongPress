@@ -59,11 +59,10 @@
     CGPoint location = [longPress locationInView:self.tableView];
     NSIndexPath *IndexPath =[self.tableView indexPathForRowAtPoint:location];
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:IndexPath];
-   
-    
 
     
     switch (longPress.state) {
+            
         case UIGestureRecognizerStateBegan:{
             
             self.souceIndexPath = IndexPath;
@@ -72,7 +71,7 @@
 
             __block CGPoint center = cell.center;
             self.snapshot.center = center;
-            self.snapshot.alpha = 0.0;
+            self.snapshot.alpha = 1;
             [self.tableView addSubview:self.snapshot];
             [UIView animateWithDuration:0.25 animations:^{
                 
@@ -100,7 +99,7 @@
             
 
             if (self.souceIndexPath != IndexPath) {
-                NSLog(@"%d------%d",IndexPath.row,self.souceIndexPath.row);
+                NSLog(@"%ld------%ld",(long)IndexPath.row,(long)self.souceIndexPath.row);
                 
                 [self.tableData exchangeObjectAtIndex:IndexPath.row withObjectAtIndex:self.souceIndexPath.row];
                 [self.tableView moveRowAtIndexPath:self.souceIndexPath toIndexPath:IndexPath];
@@ -137,16 +136,13 @@
 
 - (UIView *)customSnapshotFromView:(UIView *)fromView{
     
-    UIView *snapshot = [fromView snapshotViewAfterScreenUpdates:YES];
+    UIView *snapshot = [fromView snapshotViewAfterScreenUpdates:true];
+    
+    snapshot.layer.masksToBounds = NO;
+    snapshot.layer.cornerRadius = 0.0;
     snapshot.layer.shadowOffset = CGSizeMake(-5.0, 0.0);
     snapshot.layer.shadowRadius = 5.0;
-
-    
-//    snapshot.layer.masksToBounds = NO;
-//    snapshot.layer.cornerRadius = 0.0;
-//    snapshot.layer.shadowOffset = CGSizeMake(-5.0, 0.0);
-//    snapshot.layer.shadowRadius = 5.0;
-//    snapshot.layer.shadowOpacity = 0.4;
+    snapshot.layer.shadowOpacity = 0.4;
     
     return snapshot;
 }
@@ -162,13 +158,12 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *ID = @"cell";
-    
-    
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
-    cell.text = self.tableData[indexPath.row];
+    cell.textLabel.text = self.tableData[indexPath.row];
     
     return cell;
 }
